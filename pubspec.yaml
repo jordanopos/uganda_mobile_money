@@ -1,6 +1,6 @@
 name: uganda_mobile_money
 description: A Flutter Package for adding Mobile Money Payments to Flutter Apps using FlutterWave
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/jordanopos/uganda_mobile_money.git
 maintainer: Ojangole Jordan (ojangole.jordan@gmail.com)
 

@@ -1,39 +1,71 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
-
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+Add Mobile Money payments to your flutter apps using the FlutterWave api gateway.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+[x] Recieve Payments through Mobile Money in Uganda
+[x] Supports MTN Momo Transactions
+[x] Supports Airtel Money Transactions
+[x] Verify Charges your have made before adding value
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+ Get your api keys, head over to https://dashboard.flutterwave.com/settings/apis
+
+ You might also want to read about flutterwaves documentation. For this head to https://developer.flutterwave.com/reference
 
 ## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
+ 
+Create an instance of the UgandaMobileMoney class.
 ```dart
-const like = 'sample';
+const secretKey = "FLWSECK-XXXXX-X"; // flutterwave secret key
+UgandaMobileMoney _mobileMoney = UgandaMobileMoney(secretKey); 
+```
+
+Initiate Payments
+```dart
+void chargeClient() async {
+    MomoPayResponse response = await _mobileMoney.chargeClient(
+        MomoPayRequest(
+            txRef: "MC-01928403", // should be unique for each transaction
+            amount: "1500", // amount in UGX you want to charge
+            email: "tst@gmail.com", // email of the person you want to charge
+            phoneNumber: "256123456723", // clients phone number
+            fullname: "Ojangole Joran", // full name of client
+            redirectUrl: "https://yoursite.com", // redirect url after payment
+            voucher: "128373", // useful for vodafone. you can ignore this
+            network: UgandaNetwork.mtn // network, can be either mtn or airtel
+            ),
+        );
+
+    print(response.message);
+  }
+```
+To Verify transactions
+```dart
+   void verifyTransaction() {
+    _mobileMoney.verifyTransaction(taxRef).then((value) {
+      if (value == TransactionStatus.failed) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Failed")));
+      } else if (value == TransactionStatus.pending) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Pending")));
+      } else if (value == TransactionStatus.success) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Success")));
+      } else if (value == TransactionStatus.unknown) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Unknown")));
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Unknown")));
+      }
+    });
+  }
 ```
 
 ## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+Please contact me if your have any feature requests or file issues via the respository.
+
+You can also buy me a rolex : https://dashboard.flutterwave.com/donate/7nacgysd7ilf

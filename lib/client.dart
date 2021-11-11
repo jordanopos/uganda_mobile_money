@@ -5,17 +5,17 @@ import '../models/pay.request.dart';
 import '../models/pay.response.dart';
 import '../models/transaction.model.dart';
 
-class UgandaMobileMoneyClient {
+class UgandaMobileMoney {
   /// The secret key got from your flutterwave dashboard. go to https://dashboard.flutterwave.com/dashboard/settings/apis
   String secretKey;
   Logger _logger = Logger();
 
-  UgandaMobileMoneyClient({
+  UgandaMobileMoney({
     required this.secretKey,
   });
 
   /// Initialtes a payment through the flutterwave api, works on both MTN and AIRTEL
-  Future<MomoPayResponse> initiatePaymentRequest(MomoPayRequest request) async {
+  Future<MomoPayResponse> chargeClient(MomoPayRequest request) async {
     try {
       Uri requestUrl = Uri.parse(
           "https://api.flutterwave.com/v3/charges?type=mobile_money_uganda");
@@ -48,7 +48,6 @@ class UgandaMobileMoneyClient {
       Uri verifyTXNURL =
           Uri.https('api.flutterwave.com', "/v3/transactions", queryParams);
 
-      _logger.i(verifyTXNURL.toString());
       var response = await http.get(
         verifyTXNURL,
         headers: {
