@@ -2,10 +2,10 @@ Add Mobile Money payments to your flutter apps using the FlutterWave api gateway
 
 ## Features
 
-[x] Recieve Payments through Mobile Money in Uganda
-[x] Supports MTN Momo Transactions
-[x] Supports Airtel Money Transactions
-[x] Verify Charges your have made before adding value
+- [x] Recieve Payments through Mobile Money in Uganda
+- [x] Supports MTN Momo Transactions
+- [x] Supports Airtel Money Transactions
+- [x] Verify Charges your have made before adding value
 
 ## Getting started
 
