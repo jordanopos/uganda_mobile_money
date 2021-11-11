@@ -1,3 +1,6 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+* Iniital Release of uganda_mobile_money.
+## 0.0.2
+
+* Update Readme
