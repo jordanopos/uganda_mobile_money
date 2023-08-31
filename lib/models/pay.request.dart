@@ -1,5 +1,3 @@
-import 'package:logger/logger.dart';
-
 enum UgandaNetwork { mtn, airtel }
 
 class MomoPayRequest {

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import '../models/pay.request.dart';
 import '../models/pay.response.dart';
@@ -9,6 +9,7 @@ class UgandaMobileMoney {
   /// The secret key got from your flutterwave dashboard. go to https://dashboard.flutterwave.com/dashboard/settings/apis
   String secretKey;
   Logger _logger = Logger();
+  Dio _dio = Dio();
 
   UgandaMobileMoney({
     required this.secretKey,
@@ -17,19 +18,21 @@ class UgandaMobileMoney {
   /// Initialtes a payment through the flutterwave api, works on both MTN and AIRTEL
   Future<MomoPayResponse> chargeClient(MomoPayRequest request) async {
     try {
-      Uri requestUrl = Uri.parse(
-          "https://api.flutterwave.com/v3/charges?type=mobile_money_uganda");
+      String requestUrl =
+          "https://api.flutterwave.com/v3/charges?type=mobile_money_uganda";
 
-      var headers = {
-        'Authorization': 'Bearer $secretKey',
-      };
+      var headers = {'Authorization': 'Bearer $secretKey'};
 
-      var response =
-          await http.post(requestUrl, headers: headers, body: request.toJson());
+      var response = await _dio.post(requestUrl,
+          options: Options(headers: headers),
+          data: json.encode(request.toJson()));
 
-      var jsonData = jsonDecode(response.body);
+      _logger.i(response.data);
 
-      MomoPayResponse momoPayResponse = MomoPayResponse.fromJson(jsonData);
+      Map<String, dynamic> gottenResponse = response.data;
+
+      MomoPayResponse momoPayResponse =
+          MomoPayResponse.fromJson(gottenResponse);
 
       return momoPayResponse;
     } catch (e) {
@@ -40,41 +43,40 @@ class UgandaMobileMoney {
 
   /// Before adding value to a transaction, you should always verify it first. This will return a {TransactionStatus} that can be either failed, pending , success or unknown
   Future<TransactionStatus> verifyTransaction(txRef) async {
-    Datum? currentTransaction;
+    // Datum? currentTransaction;
 
-    var queryParams = {"tx_ref": txRef};
+    // var queryParams = {"tx_ref": txRef};
 
-    try {
-      Uri verifyTXNURL =
-          Uri.https('api.flutterwave.com', "/v3/transactions", queryParams);
+    // try {
+    //   Uri verifyTXNURL =
+    //       Uri.https('api.flutterwave.com', "/v3/transactions", queryParams);
 
-      var response = await http.get(
-        verifyTXNURL,
-        headers: {
-          'Authorization': 'Bearer $secretKey',
-        },
-      );
+    //   var response = await http.get(
+    //     verifyTXNURL,
+    //     headers: {'Authorization': 'Bearer $secretKey', 'Accept': "*/*"},
+    //   );
 
-      var jsonData = jsonDecode(response.body);
+    //   var jsonData = jsonDecode(response.body);
 
-      TransactionResponseModel model =
-          TransactionResponseModel.fromJson(jsonData);
+    //   TransactionResponseModel model =
+    //       TransactionResponseModel.fromJson(jsonData);
 
-      if (model.data.length == 1) {
-        Datum? currentTxn = model.data[0];
-        currentTransaction = currentTxn;
-      }
+    //   if (model.data.length == 1) {
+    //     Datum? currentTxn = model.data[0];
+    //     currentTransaction = currentTxn;
+    //   }
 
-      if (currentTransaction != null) {
-        return getTransactionStatus(currentTransaction);
-      } else {
-        return TransactionStatus.unknown;
-      }
-    } catch (e) {
-      _logger.e(e.toString());
+    //   if (currentTransaction != null) {
+    //     return getTransactionStatus(currentTransaction);
+    //   } else {
+    //     return TransactionStatus.unknown;
+    //   }
+    return TransactionStatus.unknown;
+    // } catch (e) {
+    //   _logger.e(e.toString());
 
-      return TransactionStatus.unknown;
-    }
+    //   return TransactionStatus.unknown;
+    // }
   }
 }
 
