@@ -43,40 +43,37 @@ class UgandaMobileMoney {
 
   /// Before adding value to a transaction, you should always verify it first. This will return a {TransactionStatus} that can be either failed, pending , success or unknown
   Future<TransactionStatus> verifyTransaction(txRef) async {
-    // Datum? currentTransaction;
+    Datum? currentTransaction;
 
-    // var queryParams = {"tx_ref": txRef};
+    try {
+      String verifyTXNURL =
+          'https://api.flutterwave.com/v3/transactions?tx_ref=$txRef';
 
-    // try {
-    //   Uri verifyTXNURL =
-    //       Uri.https('api.flutterwave.com', "/v3/transactions", queryParams);
+      var response = await _dio.get(
+        verifyTXNURL,
+        options: Options(headers: {'Authorization': 'Bearer $secretKey'}),
+      );
 
-    //   var response = await http.get(
-    //     verifyTXNURL,
-    //     headers: {'Authorization': 'Bearer $secretKey', 'Accept': "*/*"},
-    //   );
+      var jsonData = jsonDecode(response.data);
 
-    //   var jsonData = jsonDecode(response.body);
+      TransactionResponseModel model =
+          TransactionResponseModel.fromJson(jsonData);
 
-    //   TransactionResponseModel model =
-    //       TransactionResponseModel.fromJson(jsonData);
+      if (model.data.length == 1) {
+        Datum? currentTxn = model.data[0];
+        currentTransaction = currentTxn;
+      }
 
-    //   if (model.data.length == 1) {
-    //     Datum? currentTxn = model.data[0];
-    //     currentTransaction = currentTxn;
-    //   }
+      if (currentTransaction != null) {
+        return getTransactionStatus(currentTransaction);
+      } else {
+        return TransactionStatus.unknown;
+      }
+    } catch (e) {
+      _logger.e(e.toString());
 
-    //   if (currentTransaction != null) {
-    //     return getTransactionStatus(currentTransaction);
-    //   } else {
-    //     return TransactionStatus.unknown;
-    //   }
-    return TransactionStatus.unknown;
-    // } catch (e) {
-    //   _logger.e(e.toString());
-
-    //   return TransactionStatus.unknown;
-    // }
+      return TransactionStatus.unknown;
+    }
   }
 }
 
